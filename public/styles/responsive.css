@@ -116,6 +116,10 @@
 
 @media only screen and (max-width: 991px)
 {
+	#input-search{
+	text-align: right;
+	}
+	
 	h1{font-size: 48px;}
 	h2{font-size: 36px;}
 	.main_slider_content h6

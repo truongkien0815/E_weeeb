@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Protype;
+use App\Models\Comment;
+use App\Helper\CartHelper;
 
 class ProductController extends Controller
 {
@@ -15,11 +17,13 @@ class ProductController extends Controller
      */
     public function index()
     {
+        $product10 = Product::limit(10, 10)->where('quantity', '>', 0)->orderBy('created_at', 'desc')->get();
         $products = Product::all();
         $protype = Protype::all();
-        return view('index', ['data' => $products])->with('protype', $protype);
+        return view('index', ['data' => $products])->with('protype', $protype)->with('product10', $product10);
    
     }
+    
 
     /**
      * Show the form for creating a new resource.
@@ -39,9 +43,15 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $product = Product::where('name','like','%'. $request->search .'%')->paginate(4);
-        return view('categories')->with('product',$product);
+        $request->flash();
+      
+        $request->old('search');
+        $product = Product::where('name','like','%'. $request->old('search') .'%')->paginate(4);
+        
+
+        return view('categories')->with('product',$product)->with('i', (request()->input('page', 1) - 1) * 4);
     }
+    
     public function story(Request $request)
     {
         if($request->type == 0)
@@ -66,9 +76,9 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
+    {  $comment = comment::all();
         $product = Product::find($id);
-        return view('single')->with('product',$product);
+        return view('single')->with('product',$product)->with('comment',$comment);
     }
 
     /**
@@ -103,5 +113,9 @@ class ProductController extends Controller
     public function destroy($id)
     {
         //
+        $item = Product::find($id);
+
+        $item->delete();
+        return redirect()->back();
     }
 }

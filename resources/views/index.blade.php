@@ -1,4 +1,9 @@
 <x-header>
+
+
+
+
+
 	<!-- Slider -->
 
 	<div class="main_slider" style="background-image:url(images/slider_1.jpg)">
@@ -6,9 +11,46 @@
 			<div class="row align-items-center fill_height">
 				<div class="col">
 					<div class="main_slider_content">
+					@if(!isset(Auth::user()->name))
+					<li><a href="{{ url('login') }}"><i class="fa fa-sign-in" aria-hidden="true"></i>  Sign In</a></li>
+						<li><a href="{{ url('register') }}"><i class="fa fa-user-plus" aria-hidden="true"></i>  Register</a></li>
+
+@else
+<li><a href="#"><i class="fa fa-user-o"></i>{{Auth::user()->name}}  </a></li>
+
+<a style="color:white" href="#" data-toggle="modal" data-target="#logoutModal"><i style="color:red" class="fa fa-sign-out" aria-hidden="true"></i>
+</a>
+@endif
+
+   <!-- Logout Modal-->
+   <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                                    <form method="POST" action="{{ route('logout') }}" class="btn btn-primary">
+                                        @csrf
+                                        <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault();
+                                            this.closest('form').submit();" style="text-decoration: none; color: #fff !important">
+                                            {{ __('Log Out') }}
+                                        </x-responsive-nav-link>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
 						<h6>Spring / Summer Collection 2017</h6>
 						<h1>Get up to 30% Off New Arrivals</h1>
 						<div class="red_button shop_now_button"><a href="#">shop now</a></div>
+						
 					</div>
 				</div>
 			</div>
@@ -61,11 +103,22 @@
 					<div class="new_arrivals_sorting">
 						<ul class="arrivals_grid_sorting clearfix button-group filters-button-group">
 							<li class="grid_sorting_button button d-flex flex-column justify-content-center align-items-center active is-checked"  id="type"  data-type="0" data-filter="*">all</li>
+
+							@if(Auth::check())
 							@foreach($protype as $item)
-							<li class="grid_sorting_button button d-flex flex-column justify-content-center align-items-center" id="type" data-type="{{$item->type_id}}">{{$item->type_name}}</li>
-							<!-- <li class="grid_sorting_button button d-flex flex-column justify-content-center align-items-center" data-filter=".accessories">accessories</li>
-							<li class="grid_sorting_button button d-flex flex-column justify-content-center align-items-center" data-filter=".men">men's</li> -->
+							
+							<li class="grid_sorting_button button d-flex flex-column justify-content-center align-items-center" id="type" data-type="{{$item->type_id}}" data-userid="{{Auth::user()->id}}" >{{$item->type_name}}</li>
+						
 							@endforeach
+											@else
+											@foreach($protype as $item)
+											<li class="grid_sorting_button button d-flex flex-column justify-content-center align-items-center" id="type_chualogin" data-type="{{$item->type_id}}">{{$item->type_name}}</li>
+							
+											@endforeach
+
+											@endif
+
+							
 						</ul>
 					</div>
 				</div>
@@ -93,11 +146,19 @@
 								<div class="favorite favorite_left"></div>
 								<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>-$20</span></div>
 								<div class="product_info">
-									<h6 class="product_name"><a href="{{ url('product/'.$item->id)}}">Fujifilm X100T 16 MP Digital Camera (Silver)</a></h6>
-									<div class="product_price">$520.00<span>$590.00</span></div>
+									<h6 class="product_name"><a href="{{ url('product/'.$item->id)}}">{{$item->name}}</a></h6>
+									<div class="product_price">{{ number_format($item->price,0,',','.') }}<span>$590.00</span></div>
 								</div>
 							</div>
-							<div class="red_button add_to_cart_button"><a href="{{route('cart.add',['id'=>$item->id])}}">add to cart</a></div>
+							@if(Auth::check())
+							<div class="red_button add_to_cart_button"><a href="{{route('cart.add',['id'=>$item->id,Auth::user()->id])}}">add to cart</a></div>
+											@else
+											<div class="red_button add_to_cart_button" id="add_to_cart_button"><a href="#">add to cart</a></div>
+
+
+											@endif
+
+						
 						</div>
 						@endforeach
 						
@@ -184,179 +245,45 @@
 						<div class="owl-carousel owl-theme product_slider">
 
 							<!-- Slide 1 -->
-
-							<div class="owl-item product_slider_item">
+@foreach($product10 as $item)
+							<div class="owl-item product_slider_item ">
 								<div class="product-item">
 									<div class="product discount">
 										<div class="product_image">
-											<img src="images/product_1.png" alt="">
+											<img src="{{ asset('images/'.$item->image)}}" alt="">
 										</div>
 										<div class="favorite favorite_left"></div>
 										<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>-$20</span></div>
 										<div class="product_info">
-											<h6 class="product_name"><a href="single.html">Fujifilm X100T 16 MP Digital Camera (Silver)</a></h6>
-											<div class="product_price">$520.00<span>$590.00</span></div>
+											<h6 class="product_name"><a href="{{ url('product/'.$item->id)}}">{{ $item->name}}</a></h6>
+											<div class="product_price">{{$item->price}} VND<span>$590.00</span></div>
 										</div>
+
+										@if(Auth::check())
+										<div class="red_button add_to_cart_button"><a href="{{route('cart.add',['id'=>$item->id,Auth::user()->id])}}">add to cart</a></div>
+										<!-- <div class="red_button add_to_cart_button"><a href="{{route('cart.add',['id'=>$item->id])}}">add to cart</a></div> -->
+											@else
+											<div class="red_button add_to_cart_button" id="add_to_cart_button"><a href="#">add to cart</a></div>
+
+
+											@endif
+										
+										
 									</div>
+									
 								</div>
+								
 							</div>
+							@endforeach
 
-							<!-- Slide 2 -->
+						
+						
 
-							<div class="owl-item product_slider_item">
-								<div class="product-item women">
-									<div class="product">
-										<div class="product_image">
-											<img src="images/product_2.png" alt="">
-										</div>
-										<div class="favorite"></div>
-										<div class="product_bubble product_bubble_left product_bubble_green d-flex flex-column align-items-center"><span>new</span></div>
-										<div class="product_info">
-											<h6 class="product_name"><a href="single.html">Samsung CF591 Series Curved 27-Inch FHD Monitor</a></h6>
-											<div class="product_price">$610.00</div>
-										</div>
-									</div>
-								</div>
-							</div>
 
-							<!-- Slide 3 -->
+					
 
-							<div class="owl-item product_slider_item">
-								<div class="product-item women">
-									<div class="product">
-										<div class="product_image">
-											<img src="images/product_3.png" alt="">
-										</div>
-										<div class="favorite"></div>
-										<div class="product_info">
-											<h6 class="product_name"><a href="single.html">Blue Yeti USB Microphone Blackout Edition</a></h6>
-											<div class="product_price">$120.00</div>
-										</div>
-									</div>
-								</div>
-							</div>
 
-							<!-- Slide 4 -->
-
-							<div class="owl-item product_slider_item">
-								<div class="product-item accessories">
-									<div class="product">
-										<div class="product_image">
-											<img src="images/product_4.png" alt="">
-										</div>
-										<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
-										<div class="favorite favorite_left"></div>
-										<div class="product_info">
-											<h6 class="product_name"><a href="single.html">DYMO LabelWriter 450 Turbo Thermal Label Printer</a></h6>
-											<div class="product_price">$410.00</div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<!-- Slide 5 -->
-
-							<div class="owl-item product_slider_item">
-								<div class="product-item women men">
-									<div class="product">
-										<div class="product_image">
-											<img src="images/product_5.png" alt="">
-										</div>
-										<div class="favorite"></div>
-										<div class="product_info">
-											<h6 class="product_name"><a href="single.html">Pryma Headphones, Rose Gold & Grey</a></h6>
-											<div class="product_price">$180.00</div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<!-- Slide 6 -->
-
-							<div class="owl-item product_slider_item">
-								<div class="product-item accessories">
-									<div class="product discount">
-										<div class="product_image">
-											<img src="images/product_6.png" alt="">
-										</div>
-										<div class="favorite favorite_left"></div>
-										<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>-$20</span></div>
-										<div class="product_info">
-											<h6 class="product_name"><a href="single.html">Fujifilm X100T 16 MP Digital Camera (Silver)</a></h6>
-											<div class="product_price">$520.00<span>$590.00</span></div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<!-- Slide 7 -->
-
-							<div class="owl-item product_slider_item">
-								<div class="product-item women">
-									<div class="product">
-										<div class="product_image">
-											<img src="images/product_7.png" alt="">
-										</div>
-										<div class="favorite"></div>
-										<div class="product_info">
-											<h6 class="product_name"><a href="single.html">Samsung CF591 Series Curved 27-Inch FHD Monitor</a></h6>
-											<div class="product_price">$610.00</div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<!-- Slide 8 -->
-
-							<div class="owl-item product_slider_item">
-								<div class="product-item accessories">
-									<div class="product">
-										<div class="product_image">
-											<img src="images/product_8.png" alt="">
-										</div>
-										<div class="favorite"></div>
-										<div class="product_info">
-											<h6 class="product_name"><a href="single.html">Blue Yeti USB Microphone Blackout Edition</a></h6>
-											<div class="product_price">$120.00</div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<!-- Slide 9 -->
-
-							<div class="owl-item product_slider_item">
-								<div class="product-item men">
-									<div class="product">
-										<div class="product_image">
-											<img src="images/product_9.png" alt="">
-										</div>
-										<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>sale</span></div>
-										<div class="favorite favorite_left"></div>
-										<div class="product_info">
-											<h6 class="product_name"><a href="single.html">DYMO LabelWriter 450 Turbo Thermal Label Printer</a></h6>
-											<div class="product_price">$410.00</div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<!-- Slide 10 -->
-
-							<div class="owl-item product_slider_item">
-								<div class="product-item men">
-									<div class="product">
-										<div class="product_image">
-											<img src="images/product_10.png" alt="">
-										</div>
-										<div class="favorite"></div>
-										<div class="product_info">
-											<h6 class="product_name"><a href="single.html">Pryma Headphones, Rose Gold & Grey</a></h6>
-											<div class="product_price">$180.00</div>
-										</div>
-									</div>
-								</div>
-							</div>
+						
 						</div>
 
 						<!-- Slider Navigation -->
@@ -524,16 +451,38 @@
 		</div>
 	</footer>
 
+
+
+
+
+	
+
 </div>
 
-<script src="js/jquery-3.2.1.min.js"></script>
-<script src="styles/bootstrap4/popper.js"></script>
-<script src="styles/bootstrap4/bootstrap.min.js"></script>
-<script src="plugins/Isotope/isotope.pkgd.min.js"></script>
-<script src="plugins/OwlCarousel2-2.2.1/owl.carousel.js"></script>
-<script src="plugins/easing/easing.js"></script>
-<script src="js/custom.js"></script>
-<script src="js/ajax.js"></script>
+<script src="{{asset('js/jquery-3.2.1.min.js')}}"></script>
+<script src="{{asset('styles/bootstrap4/popper.js')}}"></script>
+<script src="{{asset('styles/bootstrap4/bootstrap.min.js')}}"></script>
+<script src="{{asset('plugins/Isotope/isotope.pkgd.min.js')}}"></script>
+<script src="{{asset('plugins/OwlCarousel2-2.2.1/owl.carousel.js')}}"></script>
+<script src="{{asset('plugins/easing/easing.js')}}"></script>
+<script src="{{asset('js/custom.js')}}"></script>
+<script src="{{asset('js/ajax.js')}}"></script>
+<script src="{{asset('js/script.js')}}"></script>
+
+
+
+<script src="{{asset('js/jquery/jquery-2.2.4.min.js')}}"></script>
+    <!-- Popper js -->
+    <script src="{{asset('js/popper.min.js')}}"></script>
+    <!-- Bootstrap js -->
+    <script src="{{asset('js/bootstrap.min.js')}}"></script>
+    <!-- Plugins js -->
+    <script src="{{asset('js/plugins.js')}}"></script>
+    <!-- Active js -->
+    <script src="{{asset('js/active.js')}}"></script>
+
+
+	
 
 </body>
 

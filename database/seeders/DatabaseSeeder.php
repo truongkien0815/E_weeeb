@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+      
         DB::table('products')->insert([
             'id' => 4,
             'name' => 'OPPO Reno6 Z 5G',
@@ -64,24 +65,24 @@ class DatabaseSeeder extends Seeder
         
     DB::table('protypes')->insert([
       'type_id' => 1,
-      'type_name' => 'PHONE',
+      'type_name' => 'ÁO',
     ]);
 
     DB::table('protypes')->insert([
       'type_id' => 2,
-      'type_name' => 'LAPTOP',
+      'type_name' => 'QUẦN',
     ]);
     DB::table('protypes')->insert([
       'type_id' => 3,
-      'type_name' => 'TABLET',
+      'type_name' => 'GIÀY',
     ]);
     DB::table('protypes')->insert([
       'type_id' => 4,
-      'type_name' => 'ACCESSORY',
+      'type_name' => 'ĐỒNG HỒ',
     ]);
     DB::table('protypes')->insert([
       'type_id' => 5,
-      'type_name' => 'SWATCH',
+      'type_name' => 'MŨ',
     ]);
 
     DB::table('manufactures')->insert([

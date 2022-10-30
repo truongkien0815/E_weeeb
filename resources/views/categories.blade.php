@@ -70,8 +70,17 @@
 										<i class="fa fa-angle-down"></i>
 									</a>
 									<ul class="account_selection">
-										<li><a href="#"><i class="fa fa-sign-in" aria-hidden="true"></i>Sign In</a></li>
-										<li><a href="#"><i class="fa fa-user-plus" aria-hidden="true"></i>Register</a></li>
+										@if(!isset(Auth::user()->name))
+										<li><a href="{{ url('login') }}"><i class="fa fa-sign-in" aria-hidden="true"></i>Sign In</a></li>
+										<li><a href="{{ url('register') }}"><i class="fa fa-user-plus" aria-hidden="true"></i>Register</a></li>
+										@else
+										<li><a href=""><i class="fa fa-sign-in" aria-hidden="true"></i>{{Auth::user()->name}}</a></li>
+										<li>
+										<a style="color:white" href="#" data-toggle="modal" data-target="#logoutModal"><i style="color:red" class="fa fa-sign-out" aria-hidden="true"></i>
+</a>
+										</li>
+										@endif
+										
 									</ul>
 								</li>
 							</ul>
@@ -88,11 +97,11 @@
 				<div class="row">
 					<div class="col-lg-12 text-right">
 						<div class="logo_container">
-							<a href="#">colo<span>shop</span></a>
+							<a href="#">fashion<span>shop</span></a>
 						</div>
 						<nav class="navbar">
 							<ul class="navbar_menu">
-								<li><a href="product">home</a></li>
+								<li><a href="{{ asset('') }}">home</a></li>
 								<li><a href="#">shop</a></li>
 								<li><a href="#">promotion</a></li>
 								<li><a href="#">pages</a></li>
@@ -100,14 +109,14 @@
 								<li><a href="contact">contact</a></li>
 							</ul>
 							<ul class="navbar_user">
-							<input type="text"style=""  name="search" id="productname">
+							<!-- <input type="text"style=""  name="search" id="productname">
 					
-							<li><i class="fa fa-search" id="search" aria-hidden="true"></i></li>
+							<li><i class="fa fa-search" id="search" aria-hidden="true"></i></li> -->
 
 							
 								<li><a href="#"><i class="fa fa-user" aria-hidden="true"></i></a></li>
 								<li class="checkout">
-									<a href="#">
+									<a href="{{ url('checkout')}}">
 										<i class="fa fa-shopping-cart" aria-hidden="true"></i>
 										<span id="checkout_items" class="checkout_items">2</span>
 									</a>
@@ -118,6 +127,23 @@
 							</div>
 						</nav>
 					</div>
+					<div class="col-lg-8">
+						
+					</div>
+					
+					<div class="col-lg-4">
+							<input type="text" style="height:35px;" size="30" placeholder="Search"  name="search" id="productname">
+					
+							@if(Auth::check())
+							<i class="fa fa-search" id="search" data-userid="{{Auth::user()->id}}" aria-hidden="true"></i>
+											@else
+											<i class="fa fa-search"  id="search_chualogin" aria-hidden="true"></i>
+
+
+											@endif
+
+							
+                     </div>
 				</div>
 			</div>
 		</div>
@@ -315,16 +341,26 @@
 									<div class="product-item men">
 										<div class="product discount product_filter">
 											<div class="product_image">
-												<img src="images/product_1.png" alt="">
+												<img src="{{ asset('images/'.$item->image)}}" alt="">
 											</div>
 											<div class="favorite favorite_left"></div>
 											<div class="product_bubble product_bubble_right product_bubble_red d-flex flex-column align-items-center"><span>-$20</span></div>
 											<div class="product_info">
-												<h6 class="product_name"><a href="single.html">{{ $item->name}}</a></h6>
-												<div class="product_price">$520.00<span>$590.00</span></div>
+												<h6 class="product_name"><a href="{{ url('product/'.$item->id)}}">{{ $item->name}}</a></h6>
+												<div class="product_price">{{ number_format($item->price,0,',','.') }}<span>$590.00</span></div>
 											</div>
 										</div>
-										<div class="red_button add_to_cart_button"><a href="#">add to cart</a></div>
+
+										@if(Auth::check())
+										
+										<div class="red_button add_to_cart_button"><a href="{{route('cart.add',['id'=>$item->id,Auth::user()->id])}}">add to cart</a></div>
+											@else
+											<div class="red_button add_to_cart_button" id="add_to_cart_button"><a href="#">add to cart</a></div>
+
+
+											@endif
+
+										
 									</div>	
 									@endforeach			
 									<!-- Product 12 -->
@@ -351,14 +387,17 @@
 									<div class="pages d-flex flex-row align-items-center">
 										<!-- <div class="page_current"> -->
 									
-											<span>	{{$product->links("pagination::bootstrap-4")}}</span>
+											<span>	
+											
+												{{$product->links("pagination::bootstrap-4")}}
+											</span>
 											<!-- <ul class="page_selection">
 												<li><a href="#">1</a></li>
 												<li><a href="#">2</a></li>
 												<li><a href="#">3</a></li>
 											</ul> -->
 										<!-- </div> -->
-										<!-- <div class="page_total"><span>of</span> 3</div> -->
+										
 										<div id="next_page_1" class="page_next"><a href="#"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></a></div>
 									</div>
 
@@ -440,7 +479,7 @@
 
 	<!-- Footer -->
 
-	<footer class="footer">
+	<!-- <footer class="footer">
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-6">
@@ -472,20 +511,108 @@
 				</div>
 			</div>
 		</div>
-	</footer>
+	</footer> -->
 
 </div>
 
-<script src="js/jquery-3.2.1.min.js"></script>
-<script src="styles/bootstrap4/popper.js"></script>
-<script src="styles/bootstrap4/bootstrap.min.js"></script>
-<script src="plugins/Isotope/isotope.pkgd.min.js"></script>
-<script src="plugins/OwlCarousel2-2.2.1/owl.carousel.js"></script>
-<script src="plugins/easing/easing.js"></script>
-<script src="plugins/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
-<script src="js/categories_custom.js"></script>
+
+
+
+<footer class="footer">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6">
+					<div class="footer_nav_container d-flex flex-sm-row flex-column align-items-center justify-content-lg-start justify-content-center text-center">
+						<ul class="footer_nav">
+							<li><a href="#">Blog</a></li>
+							<li><a href="#">FAQs</a></li>
+							<li><a href="contact.html">Contact us</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-6">
+					<div class="footer_social d-flex flex-row align-items-center justify-content-lg-end justify-content-center">
+						<ul>
+							
+							<li><a href="http://facebook.com"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+							<li><a href="http://twitter.com"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+							<li><a href="http://instagram.com"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+							<li><a href="http://skype.com"><i class="fa fa-skype" aria-hidden="true"></i></a></li>
+							<li><a href="http://pinterest.com"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="footer_nav_container">
+						<div class="cr">©2018 All Rights Reserverd. Made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="#">Colorlib</a> &amp; distributed by <a href="https://themewagon.com">ThemeWagon</a></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+
+
+
+
+	
+
+</div>
+
+
+   <!-- Logout Modal-->
+   <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                                    <form method="POST" action="{{ route('logout') }}" class="btn btn-primary">
+                                        @csrf
+                                        <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault();
+                                            this.closest('form').submit();" style="text-decoration: none; color: #fff !important">
+                                            {{ __('Log Out') }}
+                                        </x-responsive-nav-link>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+<script src="{{asset('js/jquery-3.2.1.min.js')}}"></script>
+<script src="{{asset('styles/bootstrap4/popper.js')}}"></script>
+<script src="{{asset('styles/bootstrap4/bootstrap.min.js')}}"></script>
+<script src="{{asset('plugins/Isotope/isotope.pkgd.min.js')}}"></script>
+<script src="{{asset('plugins/OwlCarousel2-2.2.1/owl.carousel.js')}}"></script>
+<script src="{{asset('plugins/easing/easing.js')}}"></script>
+<script src="{{asset('js/custom.js')}}"></script>
 <script src="{{asset('js/ajax.js')}}"></script>
+<script src="{{asset('js/script.js')}}"></script>
+
+
+
+<script src="{{asset('js/jquery/jquery-2.2.4.min.js')}}"></script>
+    <!-- Popper js -->
+    <script src="{{asset('js/popper.min.js')}}"></script>
+    <!-- Bootstrap js -->
+    <script src="{{asset('js/bootstrap.min.js')}}"></script>
+    <!-- Plugins js -->
+    <script src="{{asset('js/plugins.js')}}"></script>
+    <!-- Active js -->
+    <script src="{{asset('js/active.js')}}"></script>
+
+
+	
 
 </body>
 
 </html>
+

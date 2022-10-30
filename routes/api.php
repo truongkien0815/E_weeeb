@@ -2,7 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\http\Controllers\ProductController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CommentController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -18,11 +20,8 @@ use App\http\Controllers\ProductController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-// Route::post('/product/story', 'App\Http\Controllers\ProductController@story');
-
-//6/10
-Route::post('/product/story', [ProductController::class,'story']);
+Route::post('/product/story', [ProductController::class, 'story']);
+Route::resource('comments', CommentController::class);
 
 Route::post('/product/search', [ProductController::class, 'search']);
 

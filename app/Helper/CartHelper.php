@@ -17,7 +17,7 @@ class CartHelper
 
     }
 
-    public function add($product,$quantity = 1)
+    public function add($product,$quantity = 1,$user_id)
     {
         $item = [
             'id' => $product->id,
@@ -25,6 +25,10 @@ class CartHelper
             'price' => $product->price,
             'image' => $product->image,
             'quantity' => $quantity,
+            // 
+            'user_id' => $user_id->id,
+
+
          
         ];
         if(isset($this->items[$product->id])){

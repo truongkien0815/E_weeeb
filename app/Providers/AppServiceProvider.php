@@ -1,11 +1,18 @@
 <?php
 
+// namespace App\Providers;
+
+
+// use Illuminate\Support\ServiceProvider;
+// use App\Helper\CartHelper;
+
+// use Illuminate\Support\Facades\Schema;
+// use Illuminate\pagination\paginator;
+
+
 namespace App\Providers;
-
-
-use Illuminate\Support\ServiceProvider;
 use App\Helper\CartHelper;
-
+use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\pagination\paginator;
 

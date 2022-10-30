@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <title>Single Product</title>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="Colo Shop Template">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('styles/bootstrap4/bootstrap.min.css')}}">
 <link href="{{ asset('plugins/font-awesome-4.7.0/css/font-awesome.min.css')}}" rel="stylesheet" type="text/css">
 <link rel="stylesheet" type="text/css" href="{{ asset('plugins/OwlCarousel2-2.2.1/owl.carousel.css')}}">
@@ -87,7 +88,7 @@
 				<div class="row">
 					<div class="col-lg-12 text-right">
 						<div class="logo_container">
-							<a href="#">colo<span>shop</span></a>
+							<a href="#">fashion<span>shop</span></a>
 						</div>
 						<nav class="navbar">
 							<ul class="navbar_menu">
@@ -102,7 +103,7 @@
 								<li><a href="#"><i class="fa fa-search" aria-hidden="true"></i></a></li>
 								<li><a href="#"><i class="fa fa-user" aria-hidden="true"></i></a></li>
 								<li class="checkout">
-									<a href="#">
+									<a href="{{url('checkout')}}">
 										<i class="fa fa-shopping-cart" aria-hidden="true"></i>
 										<span id="checkout_items" class="checkout_items">2</span>
 									</a>
@@ -195,20 +196,38 @@
 						<div class="col-lg-3 thumbnails_col order-lg-1 order-2">
 							<div class="single_product_thumbnails">
 								<ul>
-									<li><img src="{{ asset('images/single_1_thumb.jpg')}}" alt="" data-image="images/single_1.jpg"></li>
-									<li class="active"><img src="{{ asset('images/single_2_thumb.jpg')}}" alt="" data-image="images/single_2.jpg"></li>
-									<li><img src="{{ asset('images/single_3_thumb.jpg')}}" alt="" data-image="images/single_3.jpg"></li>
+									
+								<!-- <img src="{{ asset('images/'.$product->image)}}" class="small-img"> -->
+<img src="{{ asset('images/single_2_thumb.jpg')}}" class="small-img faded">
+<img src="{{ asset('images/'.$product->image)}}" alt="" style="height: 150px;width:150px;" class="small-img">
+<img src="{{ asset('images/single_3_thumb.jpg')}}" class="small-img faded">
+
+									<!-- <li><img src="{{ asset('images/single_1_thumb.jpg')}}" class="small-img" alt="" data-image="images/single_1.jpg"></li>
+									<li class="active"><img src="{{ asset('images/single_2_thumb.jpg')}}" class="small-img" alt="" data-image="images/single_2.jpg"></li>
+									<li><img src="{{ asset('images/single_3_thumb.jpg')}}" class="small-img" alt="" data-image="images/single_3.jpg"></li> -->
 								</ul>
 							</div>
 						</div>
 						
 						<div class="col-lg-9 image_col order-lg-2 order-1">
 							<div class="single_product_image">
-								<div class="single_product_image_background" style="background-image:url(images/single_2.jpg)"><img src="{{ asset('images/'.$product->image)}}" alt=""></div>
+								<div class="single_product_image_background" style="background-image:url(images/single_2.jpg)"><img src="{{ asset('images/'.$product->image)}}" class="large-img" alt=""></div>
 							</div>
 						</div>
 					</div>
 				</div>
+
+				<script>
+	const hu =document.querySelector(".large-img");
+	const small =document.querySelectorAll(".small-img");
+	small.forEach((item) => {
+		item.onclick = () =>
+		{
+			hu.setAttribute('src',item.getAttribute('src'));
+		}
+		
+	})
+</script>
 			</div>
 			<div class="col-lg-5">
 				<div class="product_details">
@@ -221,7 +240,7 @@
 						<span class="ti-truck"></span><span>free delivery</span>
 					</div>
 					<div class="original_price">$629.99</div>
-					<div class="product_price">{{$product->price}}</div>
+					<div class="product_price">{{ number_format($product->price,0,',','.') }}</div>
 					<ul class="star_rating">
 						<li><i class="fa fa-star" aria-hidden="true"></i></li>
 						<li><i class="fa fa-star" aria-hidden="true"></i></li>
@@ -244,7 +263,16 @@
 							<span id="quantity_value">1</span>
 							<span class="plus"><i class="fa fa-plus" aria-hidden="true"></i></span>
 						</div>
-						<div class="red_button add_to_cart_button"><a href="#">add to cart</a></div>
+
+						@if(Auth::check())
+						<div class="red_button add_to_cart_button"><a href="{{route('cart.add',['id'=>$product->id])}}">add to cart</a></div>
+											@else
+											<div class="red_button add_to_cart_button" id="add_to_cart_button"><a href="#">add to cart</a></div>
+
+
+											@endif
+
+						
 						<div class="product_favorite d-flex flex-column align-items-center justify-content-center"></div>
 					</div>
 				</div>
@@ -328,14 +356,46 @@
 
 							<!-- User Reviews -->
 
-							<div class="col-lg-6 reviews_col">
+      <div class="col-lg-6 reviews_col">
 								<div class="tab_title reviews_title">
 									<h4>Reviews (2)</h4>
 								</div>
-
+<!-- <div id="list"> -->
+								<!-- User Review -->
+								@foreach($comment as $item)
+		<div class="user_review_container d-flex flex-column flex-sm-row">
+									<div class="user">
+										<div class="user_pic"></div>
+										<div class="user_rating">
+											<ul class="star_rating">
+                         <?php  for($i =0;$i< $item->rating; $i++) 
+                       {
+		     	  ?>
+			          <li><i class="fa fa-star" aria-hidden="true"></i></li>
+			<?php
+			
+		}
+               ?>
+												
+											</ul>
+										</div>
+	</div>
+				
+		
+									<div class="review">
+										
+										<div class="review_date">{{ $item->created_at}}</div>
+										<div class="user_name">{{ $item->comment_content}}</div>
+										<p>{{ $item->rating}}</p>
+									</div>
+								
+								</div>
+								<!--  -->
+								<!-- </div>	 -->
+								@endforeach
 								<!-- User Review -->
 
-								<div class="user_review_container d-flex flex-column flex-sm-row">
+								<!-- <div class="user_review_container d-flex flex-column flex-sm-row">
 									<div class="user">
 										<div class="user_pic"></div>
 										<div class="user_rating">
@@ -353,29 +413,7 @@
 										<div class="user_name">Brandon William</div>
 										<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
 									</div>
-								</div>
-
-								<!-- User Review -->
-
-								<div class="user_review_container d-flex flex-column flex-sm-row">
-									<div class="user">
-										<div class="user_pic"></div>
-										<div class="user_rating">
-											<ul class="star_rating">
-												<li><i class="fa fa-star" aria-hidden="true"></i></li>
-												<li><i class="fa fa-star" aria-hidden="true"></i></li>
-												<li><i class="fa fa-star" aria-hidden="true"></i></li>
-												<li><i class="fa fa-star" aria-hidden="true"></i></li>
-												<li><i class="fa fa-star-o" aria-hidden="true"></i></li>
-											</ul>
-										</div>
-									</div>
-									<div class="review">
-										<div class="review_date">27 Aug 2016</div>
-										<div class="user_name">Brandon William</div>
-										<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-									</div>
-								</div>
+								</div> -->
 							</div>
 
 							<!-- Add Review -->
@@ -383,14 +421,32 @@
 							<div class="col-lg-6 add_review_col">
 
 								<div class="add_review">
-									<form id="review_form" action="post">
+									<!-- <form id="review_form" action="post"> -->
 										<div>
 											<h1>Add Review</h1>
-											<input id="review_name" class="form_input input_name" type="text" name="name" placeholder="Name*" required="required" data-error="Name is required.">
-											<input id="review_email" class="form_input input_email" type="email" name="email" placeholder="Email*" required="required" data-error="Valid email is required.">
+											</div>
+											<input id="review_name" class="form_input input_name" type="text" name="review_name" placeholder="Name*" required="required" data-error="Name is required.">
+											<input id="review_email" class="form_input input_email" type="email" name="review_email" placeholder="Email*" required="required" data-error="Valid email is required.">
+                <div class="mb-3">
+                    <label for="comment_content" class="form-label">Comment</label>
+					<textarea id="comment_content" class="input_review" name="comment_content"  placeholder="Your Review" rows="4" required data-error="Please, leave us a review."></textarea>
+                    <!-- <input type="text" class="form-control" id="comment_content" name="comment_content" aria-describedby="emailHelp"> -->
+                </div>
+                <div class="mb-3">
+                    <label for="rating" class="form-label">Rating</label>
+                    <input type="number" placeholder="Your Rating" max=5 class="form-control" id="rating" name="rating">
+                </div>
+                <!-- <button id="btn-comment" type="button" class="btn btn-primary" data-product-id="{{ $product->id }} " data-url="{{ route('comments.store') }}">Send</button> -->
+				<div class="text-left text-sm-right">
+											<button id="btn-comment" type="submit" class="red_button review_submit_btn trans_300" value="Submit" data-product-id="{{ $product->id }} " data-url="{{ route('comments.store') }}">submit</button>
+										</div> 
+            </div>
+
+											<!-- <input id="review_name" class="form_input input_name" type="text" name="review_name" placeholder="Name*" required="required" data-error="Name is required.">
+											<input id="review_email" class="form_input input_email" type="email" name="review_email" placeholder="Email*" required="required" data-error="Valid email is required."> -->
 										</div>
 										<div>
-											<h1>Your Rating:</h1>
+											<!-- <h1>Your Rating:</h1>
 											<ul class="user_star_rating">
 												<li><i class="fa fa-star" aria-hidden="true"></i></li>
 												<li><i class="fa fa-star" aria-hidden="true"></i></li>
@@ -398,12 +454,13 @@
 												<li><i class="fa fa-star" aria-hidden="true"></i></li>
 												<li><i class="fa fa-star-o" aria-hidden="true"></i></li>
 											</ul>
-											<textarea id="review_message" class="input_review" name="message"  placeholder="Your Review" rows="4" required data-error="Please, leave us a review."></textarea>
+											<textarea id="review_message" class="input_review" name="review_message"  placeholder="Your Review" rows="4" required data-error="Please, leave us a review."></textarea>
 										</div>
 										<div class="text-left text-sm-right">
 											<button id="review_submit" type="submit" class="red_button review_submit_btn trans_300" value="Submit">submit</button>
-										</div>
-									</form>
+										</div> -->
+
+									<!-- </form> -->
 								</div>
 
 							</div>
@@ -531,6 +588,8 @@
 <script src="{{ asset('plugins/easing/easing.js')}}"></script>
 <script src="{{ asset('plugins/jquery-ui-1.12.1.custom/jquery-ui.js')}}"></script>
 <script src="{{ asset('js/single_custom.js')}}"></script>
+<script src="{{ asset('js/ajaxcoment.js')}}"></script>
+<script src="{{ asset('js/scriptchitiet.js')}}"></script>
 </body>
 
 </html>
